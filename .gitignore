@@ -1,0 +1,23 @@
+# Node dependencies
+node_modules/
+
+# Environment configuration
+.env
+.env.local
+.env.production
+
+# Database storage
+backend/database/*.db
+database/*.db
+
+# Log files
+*.log
+npm-debug.log*
+
+# System & OS files
+.DS_Store
+Thumbs.db
+
+# IDE configuration
+.vscode/
+.idea/

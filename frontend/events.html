@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Logs - Cloud Security Monitoring</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="brand-title">CloudSec Monitor</div>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="nav-item"><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+        <li class="nav-item"><a href="resources.html"><i class="fa-solid fa-cubes"></i> Resources</a></li>
+        <li class="nav-item"><a href="alerts.html"><i class="fa-solid fa-triangle-exclamation"></i> Security Alerts</a></li>
+        <li class="nav-item active"><a href="events.html"><i class="fa-solid fa-list-check"></i> Event Logs</a></li>
+        <li class="nav-item"><a href="#" onclick="triggerGlobalSecurityScan(this); return false;"><i class="fa-solid fa-bolt"></i> Security Scan</a></li>
+        <li class="nav-item"><a href="reports.html"><i class="fa-solid fa-file-contract"></i> Reports</a></li>
+        <li class="nav-item"><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-info">
+            <div class="avatar">A</div>
+            <div>
+              <div id="user-display-name" style="font-size:0.85rem; font-weight:600;">admin</div>
+              <div style="font-size:0.7rem; color:var(--text-dim);">Administrator</div>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="handleLogout()" title="Logout"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-wrapper">
+      <header class="top-bar">
+        <div class="page-title">
+          <i class="fa-solid fa-list-check" style="color: var(--primary);"></i> CloudTrail Audit Event Logs
+          <span id="top-status-badge" class="status-badge demo"><span class="pulse-dot"></span> DEMO MODE</span>
+        </div>
+        <div class="top-bar-controls">
+          <div class="info-item">
+            <span class="info-label">AWS Region</span>
+            <span id="top-region-val" class="info-val">ap-south-1</span>
+          </div>
+          <button class="btn-scan" onclick="triggerGlobalSecurityScan(this)">
+            <i class="fa-solid fa-bolt"></i> Run Security Scan
+          </button>
+        </div>
+      </header>
+
+      <div class="content-body">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="chart-title"><i class="fa-solid fa-magnifying-glass" style="color:var(--primary);"></i> Event Log Search & Filter</div>
+            <div class="filter-bar">
+              <input type="text" id="event-search" class="input-search" placeholder="Search event, user, IP, resource..." onkeyup="debouncedSearch()">
+              
+              <select id="event-sev-filter" class="select-filter" onchange="loadEvents()">
+                <option value="ALL">All Severities</option>
+                <option value="CRITICAL">Critical</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+              </select>
+
+              <select id="event-service-filter" class="select-filter" onchange="loadEvents()">
+                <option value="ALL">All Services</option>
+                <option value="S3">S3</option>
+                <option value="IAM">IAM</option>
+                <option value="CloudTrail">CloudTrail</option>
+                <option value="EC2">EC2</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="custom-table-wrapper">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Event Name</th>
+                  <th>IAM User</th>
+                  <th>Service</th>
+                  <th>Source IP</th>
+                  <th>Target Resource</th>
+                  <th>Severity</th>
+                  <th>Risk Score</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="events-tbody">
+                <tr><td colspan="9" style="text-align:center; color:var(--text-dim);">Loading event logs...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/events.js"></script>
+</body>
+</html>

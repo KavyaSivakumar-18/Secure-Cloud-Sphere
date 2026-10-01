@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Alerts - Cloud Security Monitoring</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="brand-title">CloudSec Monitor</div>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="nav-item"><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+        <li class="nav-item"><a href="resources.html"><i class="fa-solid fa-cubes"></i> Resources</a></li>
+        <li class="nav-item active"><a href="alerts.html"><i class="fa-solid fa-triangle-exclamation"></i> Security Alerts</a></li>
+        <li class="nav-item"><a href="events.html"><i class="fa-solid fa-list-check"></i> Event Logs</a></li>
+        <li class="nav-item"><a href="#" onclick="triggerGlobalSecurityScan(this); return false;"><i class="fa-solid fa-bolt"></i> Security Scan</a></li>
+        <li class="nav-item"><a href="reports.html"><i class="fa-solid fa-file-contract"></i> Reports</a></li>
+        <li class="nav-item"><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-info">
+            <div class="avatar">A</div>
+            <div>
+              <div id="user-display-name" style="font-size:0.85rem; font-weight:600;">admin</div>
+              <div style="font-size:0.7rem; color:var(--text-dim);">Administrator</div>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="handleLogout()" title="Logout"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-wrapper">
+      <header class="top-bar">
+        <div class="page-title">
+          <i class="fa-solid fa-triangle-exclamation" style="color: var(--high);"></i> Threat Detection & Alert Management
+          <span id="top-status-badge" class="status-badge demo"><span class="pulse-dot"></span> DEMO MODE</span>
+        </div>
+        <div class="top-bar-controls">
+          <div class="info-item">
+            <span class="info-label">AWS Region</span>
+            <span id="top-region-val" class="info-val">ap-south-1</span>
+          </div>
+          <button class="btn-scan" onclick="triggerGlobalSecurityScan(this)">
+            <i class="fa-solid fa-bolt"></i> Run Security Scan
+          </button>
+        </div>
+      </header>
+
+      <div class="content-body">
+
+        <!-- Alert Summary Stats Grid -->
+        <div class="cards-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="metric-card" style="padding: 1.1rem;">
+            <div class="metric-info">
+              <h3>Critical Findings</h3>
+              <div id="stat-critical" class="metric-value sev-critical" style="font-size:1.8rem;">0</div>
+            </div>
+            <div class="metric-icon" style="color:var(--critical);"><i class="fa-solid fa-radiation"></i></div>
+          </div>
+          <div class="metric-card" style="padding: 1.1rem;">
+            <div class="metric-info">
+              <h3>High Risk Alerts</h3>
+              <div id="stat-high" class="metric-value sev-high" style="font-size:1.8rem;">0</div>
+            </div>
+            <div class="metric-icon" style="color:var(--high);"><i class="fa-solid fa-fire"></i></div>
+          </div>
+          <div class="metric-card" style="padding: 1.1rem;">
+            <div class="metric-info">
+              <h3>Open Alerts</h3>
+              <div id="stat-open" class="metric-value" style="font-size:1.8rem;">0</div>
+            </div>
+            <div class="metric-icon" style="color:var(--primary);"><i class="fa-solid fa-folder-open"></i></div>
+          </div>
+          <div class="metric-card" style="padding: 1.1rem;">
+            <div class="metric-info">
+              <h3>Resolved</h3>
+              <div id="stat-resolved" class="metric-value sev-low" style="font-size:1.8rem;">0</div>
+            </div>
+            <div class="metric-icon" style="color:var(--low);"><i class="fa-solid fa-circle-check"></i></div>
+          </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card">
+          <div class="table-header">
+            <div class="chart-title"><i class="fa-solid fa-bell" style="color:var(--high);"></i> Active Security Alerts Log</div>
+            <div class="filter-bar">
+              <select id="filter-status" class="select-filter" onchange="loadAlerts()">
+                <option value="ALL">All Statuses</option>
+                <option value="Open">Open</option>
+                <option value="Investigating">Investigating</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+
+              <select id="filter-severity" class="select-filter" onchange="loadAlerts()">
+                <option value="ALL">All Severities</option>
+                <option value="CRITICAL">Critical</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="custom-table-wrapper">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Alert ID</th>
+                  <th>Timestamp</th>
+                  <th>Service</th>
+                  <th>Resource Target</th>
+                  <th>Description</th>
+                  <th>Severity</th>
+                  <th>Risk Score</th>
+                  <th>Status</th>
+                  <th>Action Needed</th>
+                  <th>Update Status</th>
+                </tr>
+              </thead>
+              <tbody id="alerts-tbody">
+                <tr><td colspan="10" style="text-align:center; color:var(--text-dim);">Loading security alerts...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/alerts.js"></script>
+</body>
+</html>

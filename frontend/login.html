@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Cloud Security Monitoring System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="login-body">
+
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h1 class="brand-title" style="font-size: 1.4rem;">Cloud Security Monitor</h1>
+      <p style="font-size: 0.82rem; color: var(--text-muted);">Dashboard Application Authentication</p>
+    </div>
+
+    <div id="login-error" class="alert-box alert-danger" style="display: none;"></div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label for="username"><i class="fa-solid fa-user"></i> Username</label>
+        <input type="text" id="username" class="form-control" placeholder="Enter username" value="admin" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" id="password" class="form-control" placeholder="Enter password" value="admin123" required>
+      </div>
+
+      <button type="submit" class="btn-scan btn-block">
+        <i class="fa-solid fa-right-to-bracket"></i> Login to System
+      </button>
+    </form>
+
+    <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+      <p style="font-size: 0.78rem; color: var(--text-dim);">
+        <i class="fa-solid fa-circle-info"></i> Default Credentials: <strong>admin</strong> / <strong>admin123</strong>
+      </p>
+      <p style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.25rem;">
+        This login protects the dashboard application only.
+      </p>
+    </div>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+</html>

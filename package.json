@@ -1,0 +1,22 @@
+{
+  "name": "cloud-security-monitoring-system",
+  "version": "1.0.0",
+  "description": "Cloud Security Monitoring and Threat Detection System",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "postinstall": "cd backend && npm install"
+  },
+  "keywords": [
+    "cloud-security",
+    "aws",
+    "s3",
+    "iam",
+    "cloudtrail",
+    "cloudwatch",
+    "threat-detection"
+  ],
+  "author": "Antigravity AI",
+  "license": "MIT"
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Cloud Security Monitoring</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="brand-title">CloudSec Monitor</div>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="nav-item"><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+        <li class="nav-item"><a href="resources.html"><i class="fa-solid fa-cubes"></i> Resources</a></li>
+        <li class="nav-item"><a href="alerts.html"><i class="fa-solid fa-triangle-exclamation"></i> Security Alerts</a></li>
+        <li class="nav-item"><a href="events.html"><i class="fa-solid fa-list-check"></i> Event Logs</a></li>
+        <li class="nav-item"><a href="#" onclick="triggerGlobalSecurityScan(this); return false;"><i class="fa-solid fa-bolt"></i> Security Scan</a></li>
+        <li class="nav-item"><a href="reports.html"><i class="fa-solid fa-file-contract"></i> Reports</a></li>
+        <li class="nav-item active"><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-info">
+            <div class="avatar">A</div>
+            <div>
+              <div id="user-display-name" style="font-size:0.85rem; font-weight:600;">admin</div>
+              <div style="font-size:0.7rem; color:var(--text-dim);">Administrator</div>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="handleLogout()" title="Logout"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-wrapper">
+      <header class="top-bar">
+        <div class="page-title">
+          <i class="fa-solid fa-gear" style="color: var(--primary);"></i> System Settings & AWS Connection Health
+          <span id="top-status-badge" class="status-badge demo"><span class="pulse-dot"></span> DEMO MODE</span>
+        </div>
+        <div class="top-bar-controls">
+          <button class="btn-scan" onclick="checkBackendHealth()">
+            <i class="fa-solid fa-heart-pulse"></i> Test Connection
+          </button>
+        </div>
+      </header>
+
+      <div class="content-body">
+
+        <!-- Connection Card -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title"><i class="fa-solid fa-plug" style="color:var(--primary);"></i> AWS SDK Connection Status</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+            <div id="settings-health-alert" class="banner-warning">
+              <i class="fa-solid fa-circle-info" style="font-size:1.3rem;"></i>
+              <div>
+                <strong>Current Status:</strong> <span id="health-mode-text">Checking AWS connection...</span>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; margin-top:0.5rem;">
+              <div style="background:rgba(255,255,255,0.03); padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+                <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase;">AWS Target Region</div>
+                <div id="sett-region" style="font-family:var(--font-mono); font-size:1.1rem; color:#fff; margin-top:0.25rem;">ap-south-1</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+                <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase;">Backend Server Port</div>
+                <div id="sett-port" style="font-family:var(--font-mono); font-size:1.1rem; color:#fff; margin-top:0.25rem;">5000</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+                <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase;">Credential Security</div>
+                <div style="font-size:0.85rem; color:var(--low); margin-top:0.25rem;"><i class="fa-solid fa-lock"></i> Environment Variable (.env)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- How to configure AWS instructions card -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title"><i class="fa-solid fa-key" style="color:var(--high);"></i> How to Enable Live AWS Monitoring</div>
+          </div>
+          <div style="font-size:0.88rem; color:var(--text-muted); line-height:1.7;">
+            <p>To enable real-time telemetry from your AWS account, configure your IAM credentials inside the backend <code>backend/.env</code> file:</p>
+            <div style="background:#070a12; padding:1.25rem; border-radius:8px; border:1px solid var(--border-color); font-family:var(--font-mono); font-size:0.82rem; color:var(--primary); margin:1rem 0;">
+              AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE<br>
+              AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY<br>
+              AWS_REGION=ap-south-1<br>
+              S3_BUCKET_NAME=my-aws-production-bucket<br>
+              PORT=5000
+            </div>
+            <p><i class="fa-solid fa-triangle-exclamation" style="color:var(--high);"></i> <strong>Security Reminder:</strong> Never hard-code credentials in frontend JavaScript or commit <code>.env</code> files to version control. Credentials are read exclusively by the Node.js backend using AWS SDK v3.</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>

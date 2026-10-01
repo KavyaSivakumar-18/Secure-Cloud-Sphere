@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Cloud Security Monitoring</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="brand-title">CloudSec Monitor</div>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="nav-item active"><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+        <li class="nav-item"><a href="resources.html"><i class="fa-solid fa-cubes"></i> Resources</a></li>
+        <li class="nav-item"><a href="alerts.html"><i class="fa-solid fa-triangle-exclamation"></i> Security Alerts</a></li>
+        <li class="nav-item"><a href="events.html"><i class="fa-solid fa-list-check"></i> Event Logs</a></li>
+        <li class="nav-item"><a href="#" onclick="triggerGlobalSecurityScan(this); return false;"><i class="fa-solid fa-bolt"></i> Security Scan</a></li>
+        <li class="nav-item"><a href="reports.html"><i class="fa-solid fa-file-contract"></i> Reports</a></li>
+        <li class="nav-item"><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-info">
+            <div class="avatar">A</div>
+            <div>
+              <div id="user-display-name" style="font-size:0.85rem; font-weight:600;">admin</div>
+              <div style="font-size:0.7rem; color:var(--text-dim);">Administrator</div>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="handleLogout()" title="Logout"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <header class="top-bar">
+        <div class="page-title">
+          <i class="fa-solid fa-gauge-high" style="color: var(--primary);"></i> Security Operations Dashboard
+          <span id="top-status-badge" class="status-badge demo"><span class="pulse-dot"></span> CHECKING MODE</span>
+        </div>
+
+        <div class="top-bar-controls">
+          <div class="info-item">
+            <span class="info-label">Target AWS Region</span>
+            <span id="top-region-val" class="info-val">ap-south-1</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Last Audit Scan</span>
+            <span id="top-scan-val" class="info-val">Just Now</span>
+          </div>
+          <button class="btn-scan" onclick="triggerGlobalSecurityScan(this)">
+            <i class="fa-solid fa-bolt"></i> Run Security Scan
+          </button>
+        </div>
+      </header>
+
+      <div class="content-body">
+
+        <!-- Demo Mode Notice Banner (Visible if AWS credentials not set) -->
+        <div id="demo-banner" class="banner-warning" style="display: none;">
+          <i class="fa-solid fa-circle-exclamation" style="font-size: 1.3rem;"></i>
+          <div>
+            <strong>DEMO MODE ACTIVE:</strong> AWS credentials are not configured in backend <code>.env</code>.
+            Displaying realistic simulated security telemetry. Configure your AWS Access Key in Settings to enable Live AWS monitoring.
+          </div>
+        </div>
+
+        <!-- Metric Cards Grid -->
+        <div class="cards-grid">
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Security Score</h3>
+              <div id="card-score-val" class="metric-value sev-critical">--/100</div>
+              <div id="card-risk-level" class="metric-sub">Risk Level: --</div>
+            </div>
+            <div class="metric-icon" style="color: var(--primary);"><i class="fa-solid fa-shield-cat"></i></div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Active Alerts</h3>
+              <div id="card-alerts-val" class="metric-value">--</div>
+              <div class="metric-sub">Requires Security Review</div>
+            </div>
+            <div class="metric-icon" style="color: var(--high);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Monitored Resources</h3>
+              <div id="card-resources-val" class="metric-value">--</div>
+              <div class="metric-sub">S3, IAM, CloudTrail, EC2</div>
+            </div>
+            <div class="metric-icon" style="color: var(--low);"><i class="fa-solid fa-server"></i></div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h3>Events Logged Today</h3>
+              <div id="card-events-val" class="metric-value">--</div>
+              <div class="metric-sub">Audit Trail Records</div>
+            </div>
+            <div class="metric-icon" style="color: var(--primary);"><i class="fa-solid fa-receipt"></i></div>
+          </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title"><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> Security Events Over Time</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chartEventsTime"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title"><i class="fa-solid fa-chart-pie" style="color:var(--high);"></i> Alerts by Severity</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chartAlertsSev"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title"><i class="fa-solid fa-chart-bar" style="color:var(--low);"></i> Events by AWS Service</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chartEventsService"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title"><i class="fa-solid fa-bullseye" style="color:var(--accent-purple);"></i> Risk Vector Distribution</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chartRiskDist"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Tables -->
+        <div class="charts-grid">
+          <!-- Recent Alerts -->
+          <div class="table-card">
+            <div class="table-header">
+              <div class="chart-title"><i class="fa-solid fa-bell" style="color:var(--high);"></i> Recent Security Alerts</div>
+              <a href="alerts.html" style="color:var(--primary); font-size:0.8rem; text-decoration:none;">View All Alerts &rarr;</a>
+            </div>
+            <div class="custom-table-wrapper">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Severity</th>
+                    <th>Service</th>
+                    <th>Resource</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-alerts-tbody">
+                  <tr><td colspan="5" style="text-align:center; color:var(--text-dim);">Loading alerts...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Recent Events -->
+          <div class="table-card">
+            <div class="table-header">
+              <div class="chart-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);"></i> Recent CloudTrail Events</div>
+              <a href="events.html" style="color:var(--primary); font-size:0.8rem; text-decoration:none;">View All Logs &rarr;</a>
+            </div>
+            <div class="custom-table-wrapper">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Event</th>
+                    <th>User</th>
+                    <th>Service</th>
+                    <th>Severity</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-events-tbody">
+                  <tr><td colspan="5" style="text-align:center; color:var(--text-dim);">Loading audit events...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

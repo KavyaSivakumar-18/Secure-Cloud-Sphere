@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Reports - Cloud Security Monitoring</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="brand-title">CloudSec Monitor</div>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="nav-item"><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+        <li class="nav-item"><a href="resources.html"><i class="fa-solid fa-cubes"></i> Resources</a></li>
+        <li class="nav-item"><a href="alerts.html"><i class="fa-solid fa-triangle-exclamation"></i> Security Alerts</a></li>
+        <li class="nav-item"><a href="events.html"><i class="fa-solid fa-list-check"></i> Event Logs</a></li>
+        <li class="nav-item"><a href="#" onclick="triggerGlobalSecurityScan(this); return false;"><i class="fa-solid fa-bolt"></i> Security Scan</a></li>
+        <li class="nav-item active"><a href="reports.html"><i class="fa-solid fa-file-contract"></i> Reports</a></li>
+        <li class="nav-item"><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-info">
+            <div class="avatar">A</div>
+            <div>
+              <div id="user-display-name" style="font-size:0.85rem; font-weight:600;">admin</div>
+              <div style="font-size:0.7rem; color:var(--text-dim);">Administrator</div>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="handleLogout()" title="Logout"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-wrapper">
+      <header class="top-bar">
+        <div class="page-title">
+          <i class="fa-solid fa-file-contract" style="color: var(--primary);"></i> Security Audit & Compliance Reports
+          <span id="top-status-badge" class="status-badge demo"><span class="pulse-dot"></span> DEMO MODE</span>
+        </div>
+        <div class="top-bar-controls">
+          <button class="btn-scan" style="background:var(--primary-gradient);" onclick="downloadPDFReport()">
+            <i class="fa-solid fa-file-pdf"></i> Export PDF Report
+          </button>
+        </div>
+      </header>
+
+      <div class="content-body">
+
+        <!-- Printable Report Canvas -->
+        <div id="pdf-report-container" style="background:#0f172a; padding:2rem; border-radius:var(--radius-lg); border:1px solid var(--border-color); color:var(--text-main);">
+          
+          <!-- Report Header -->
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--primary); padding-bottom:1.25rem; margin-bottom:1.5rem;">
+            <div>
+              <h1 style="font-size:1.6rem; font-weight:700; color:#fff;">Cloud Security Monitoring Report</h1>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem;">Comprehensive AWS Resource & Threat Detection Security Assessment</p>
+            </div>
+            <div style="text-align:right;">
+              <div id="report-timestamp" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--primary);">Date: --</div>
+              <div id="report-status-badge" style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">Telemetry Source: --</div>
+            </div>
+          </div>
+
+          <!-- Executive Summary Score Box -->
+          <div style="display:grid; grid-template-columns: 1fr 2fr; gap:1.5rem; background:rgba(255,255,255,0.02); padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:1.5rem;">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; border-right:1px solid var(--border-color); padding-right:1.5rem;">
+              <div style="font-size:0.8rem; text-transform:uppercase; color:var(--text-muted);">Overall Security Score</div>
+              <div id="rep-score" style="font-size:3rem; font-weight:800; color:var(--primary); margin:0.5rem 0;">--/100</div>
+              <div id="rep-risk-badge" class="badge-sev CRITICAL">Risk: --</div>
+            </div>
+
+            <div>
+              <h3 style="font-size:1rem; margin-bottom:0.75rem; color:#fff;">Findings Summary Breakdown</h3>
+              <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; text-align:center;">
+                <div style="background:rgba(239,68,68,0.1); padding:0.75rem; border-radius:8px; border:1px solid rgba(239,68,68,0.3);">
+                  <div style="font-size:0.72rem; color:var(--critical); font-weight:600;">CRITICAL</div>
+                  <div id="rep-cnt-critical" style="font-size:1.5rem; font-weight:700; color:#fff;">0</div>
+                </div>
+                <div style="background:rgba(249,115,22,0.1); padding:0.75rem; border-radius:8px; border:1px solid rgba(249,115,22,0.3);">
+                  <div style="font-size:0.72rem; color:var(--high); font-weight:600;">HIGH</div>
+                  <div id="rep-cnt-high" style="font-size:1.5rem; font-weight:700; color:#fff;">0</div>
+                </div>
+                <div style="background:rgba(234,179,8,0.1); padding:0.75rem; border-radius:8px; border:1px solid rgba(234,179,8,0.3);">
+                  <div style="font-size:0.72rem; color:var(--medium); font-weight:600;">MEDIUM</div>
+                  <div id="rep-cnt-medium" style="font-size:1.5rem; font-weight:700; color:#fff;">0</div>
+                </div>
+                <div style="background:rgba(16,185,129,0.1); padding:0.75rem; border-radius:8px; border:1px solid rgba(16,185,129,0.3);">
+                  <div style="font-size:0.72rem; color:var(--low); font-weight:600;">LOW</div>
+                  <div id="rep-cnt-low" style="font-size:1.5rem; font-weight:700; color:#fff;">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Remediation Recommendations -->
+          <div style="margin-bottom:1.5rem;">
+            <h3 style="font-size:1.05rem; color:var(--primary); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem;">
+              <i class="fa-solid fa-list-check"></i> Remediation Recommendations
+            </h3>
+            <ul id="rep-recommendations" style="list-style-type:none; display:flex; flex-direction:column; gap:0.5rem;">
+              <li style="color:var(--text-dim);">Loading recommendations...</li>
+            </ul>
+          </div>
+
+          <!-- Security Findings Details Table -->
+          <div>
+            <h3 style="font-size:1.05rem; color:var(--primary); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem;">
+              <i class="fa-solid fa-shield-virus"></i> Security Audit Findings List
+            </h3>
+            <table class="custom-table" style="width:100%;">
+              <thead>
+                <tr>
+                  <th>Severity</th>
+                  <th>Service</th>
+                  <th>Resource Target</th>
+                  <th>Finding Description</th>
+                  <th>Risk Score</th>
+                </tr>
+              </thead>
+              <tbody id="rep-findings-tbody">
+                <tr><td colspan="5" style="text-align:center; color:var(--text-dim);">Loading report details...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>
